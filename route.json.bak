@@ -1,0 +1,6 @@
+{
+    "aircraft_name": "G-KMAC",
+    "aircraft_model": "Cessna 172 Skyhawk",
+    "pilot_name": "Keira",
+    "airports": ["EGNH", "EGGP", "EGCC", "EGNX", "EGNH"]
+}

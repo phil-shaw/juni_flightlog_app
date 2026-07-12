@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-header">Pilot Info</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ pilot_name }}</h5>
+                <p class="card-text">Current Location: <strong><a href="{{ url_for('airport_page', icao=pilot_location) }}" class="text-white">{{ pilot_location }}</a></strong></p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">Selected Aircraft</div>
+            <div class="card-body">
+                {% if selected_aircraft %}
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <img src="{{ url_for('static', filename='thumbnails/' + selected_aircraft.reg + '.jpg') }}" 
+                                 alt="{{ selected_aircraft.type }}" 
+                                 class="img-thumbnail"
+                                 style="width: 300px; height: 200px; object-fit: contain;"
+                                 onerror="this.src='https://via.placeholder.com/300x200?text=No+Image';">
+                        </div>
+                        <div class="col">
+                            <h5 class="card-title">{{ selected_aircraft.type }} ({{ selected_aircraft.reg }})</h5>
+                            <ul class="list-unstyled mb-0">
+                                <li>Location: <a href="{{ url_for('airport_page', icao=selected_aircraft.location) }}">{{ selected_aircraft.location }}</a></li>
+                                <li>Range: {{ selected_aircraft.range }} nm</li>
+                                <li>Speed: {{ selected_aircraft.speed }} kts</li>
+                                <li>PAX: {{ selected_aircraft.pax }}</li>
+                                <li>Cargo: {{ selected_aircraft.cargo }} kgs</li>
+                            </ul>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="text-danger">No aircraft selected/found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Active Job</span>
+                {% if active_job %}
+                    <span class="badge bg-{{ 'warning' if active_job.type == 'FERRY' else 'info' if active_job.type == 'TOUR' else 'success' }}">
+                        {{ active_job.type }}
+                    </span>
+                {% endif %}
+            </div>
+            <div class="card-body text-center py-5">
+                {% if active_job %}
+                    <h3><a href="{{ url_for('airport_page', icao=active_job.origin) }}">{{ active_job.origin }}</a> &rarr; <a href="{{ url_for('airport_page', icao=active_job.destination) }}">{{ active_job.destination }}</a></h3>
+                    <p class="lead">{{ active_job.dest_name }}</p>
+                    <div class="row mt-4">
+                        <div class="col">
+                            <h5>Distance</h5>
+                            <p>{{ active_job.distance }} nm</p>
+                        </div>
+                        <div class="col">
+                            <h5>Payload</h5>
+                            <p>{{ active_job.amount }} {{ active_job.unit }}</p>
+                        </div>
+                        <div class="col">
+                            <h5>Aircraft</h5>
+                            <p>{{ active_job.aircraft_reg }} ({{ active_job.aircraft_type }})</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{{ url_for('complete_job') }}" class="btn btn-success btn-lg px-5">Complete Flight</a>
+                        <a href="{{ url_for('cancel_job') }}" class="btn btn-outline-danger btn-sm ms-3">Cancel Job</a>
+                    </div>
+                {% else %}
+                    <p class="lead text-muted">No active job.</p>
+                    <a href="{{ url_for('available_jobs') }}" class="btn btn-primary">Find Jobs</a>
+                    <a href="{{ url_for('ferry_flight') }}" class="btn btn-outline-secondary">Ferry Flight</a>
+                    <a href="{{ url_for('flight_tour') }}" class="btn btn-outline-info">Start Tour</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

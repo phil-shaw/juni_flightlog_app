@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Ferry Flight</h2>
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="aircraft_reg" class="form-label">Select Aircraft</label>
+                        <select class="form-select" id="aircraft_reg" name="aircraft_reg" required>
+                            {% for ac in aircraft_list %}
+                                <option value="{{ ac.reg }}">{{ ac.type }} ({{ ac.reg }}) - Range: {{ ac.range }} nm</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="destination" class="form-label">Destination ICAO</label>
+                        <input type="text" class="form-control" id="destination" name="destination" placeholder="e.g. KJFK" required maxlength="7">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Setup Ferry Flight</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

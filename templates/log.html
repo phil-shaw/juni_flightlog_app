@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Flight Log</h2>
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Pilot</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
+                    <th>Aircraft</th>
+                    <th>Distance</th>
+                    <th>Payload</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td><small>{{ log.Timestamp if log.Timestamp else '' }}</small></td>
+                    <td>{{ log.Pilot or 'Unknown' }}</td>
+                    <td><strong><a href="{{ url_for('airport_page', icao=log.Origin) }}">{{ log.Origin }}</a></strong></td>
+                    <td><strong><a href="{{ url_for('airport_page', icao=log.Destination) }}">{{ log.Destination }}</a></strong></td>
+                    <td>{{ log.Aircraft }} ({{ log.Type }})</td>
+                    <td>{{ log.Distance or 0 }} nm</td>
+                    <td>{{ log.Payload }} {{ log.Unit }}</td>
+                    <td>
+                        <span class="badge bg-{{ 'success' if log.Status == 'COMPLETED' else 'danger' }}">
+                            {{ log.Status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

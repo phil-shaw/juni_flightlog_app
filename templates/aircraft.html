@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Aircraft Locations</h2>
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Thumbnail</th>
+                    <th>Registration</th>
+                    <th>Type</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ac in aircraft_list|sort(attribute='location')|sort(reverse=true, attribute='location') if ac.location == pilot_location %}
+                <tr class="table-primary">
+                    <td>
+                        <img src="{{ url_for('static', filename='thumbnails/' + ac.reg + '.jpg') }}" 
+                             alt="{{ ac.type }}" 
+                             style="width: 600px; height: 400px; object-fit: contain;"
+                             onerror="this.src='https://via.placeholder.com/600x400?text=No+Image';">
+                    </td>
+                    <td><strong>{{ ac.reg }}</strong></td>
+                    <td>{{ ac.type }}</td>
+                    <td><a href="{{ url_for('airport_page', icao=ac.location) }}">{{ ac.location }}</a></td>
+                    <td><span class="badge bg-success">Available Here</span></td>
+                </tr>
+                {% endfor %}
+                {% for ac in aircraft_list|sort(attribute='location') if ac.location != pilot_location %}
+                <tr>
+                    <td>
+                        <img src="{{ url_for('static', filename='thumbnails/' + ac.reg + '.jpg') }}" 
+                             alt="{{ ac.type }}" 
+                             style="width: 100px; height: 100px; object-fit: contain;"
+                             onerror="this.src='https://via.placeholder.com/100x100?text=No+Image';">
+                    </td>
+                    <td><strong>{{ ac.reg }}</strong></td>
+                    <td>{{ ac.type }}</td>
+                    <td><a href="{{ url_for('airport_page', icao=ac.location) }}">{{ ac.location }}</a></td>
+                    <td><span class="text-muted">Unavailable</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

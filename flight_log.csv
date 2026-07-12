@@ -1,0 +1,16 @@
+Timestamp,Pilot,Aircraft,Type,Origin,Destination,Distance,Payload,Unit,Status
+02-07-2026,Keira UK,G-AAAJ,Beechcraft Bonanza F33,EGNH,EGNH,0,4,passengers,COMPLETED
+03-07-2026,Keira UK,G-BWAD,Cessna 206 Stationair,EGNH,EGGP,27,0,payload,COMPLETED
+04-07-2026,Keira UK,G-AAAZ,Diamond DA62,EGGP,EGGP,0,5,passengers,COMPLETED
+04-07-2026,Keira UK,G-AAAJ,Beechcraft Bonanza F33,EGNH,EGNH,0,1,passengers,COMPLETED
+05-07-2026,Keira UK,VH-UPV,Cessna 172 Skyhawk,YMEN,YMEN,0,1,passengers,CANCELLED
+05-07-2026,Keira US,N7738N,Piper Archer,KCMA,KNFG,103,34,kg cargo,COMPLETED
+05-07-2026,Keira US,N7738N,Piper Archer,KNFG,KCMA,103,0,payload,COMPLETED
+10-07-2026,Keira US,N484HP,Piper PA-34 Seneca,KCMA,KBXK,323,95,kg cargo,CANCELLED
+10-07-2026,Keira US,N7738N,Piper Archer,KCMA,KCMA,0,1,passengers,COMPLETED
+10-07-2026,Keira UK,G-SYRN,Piper Archer,EGNH,EGGP,27,0,payload,COMPLETED
+11-07-2026,Keira UK,D-EJHB,Beechcraft Bonanza A36,EGGP,EINC,116,4,passengers,CANCELLED
+11-07-2026,Keira UK,G-BWAD,Cessna 206 Stationair,EGGP,EGTB,128,265,kg cargo,COMPLETED
+11-07-2026,Keira UK,G-BWAD,Cessna 206 Stationair,EGTB,EGFF,87,164,kg cargo,COMPLETED
+12-07-2026,Keira UK,G-BWAA,Beechcraft Duchess 76,EGCC,EGCC,0,1,passengers,CANCELLED
+12-07-2026,Keira UK,G-BWAD,Cessna 206 Stationair,EGFF,EGNS,168,2,passengers,COMPLETED

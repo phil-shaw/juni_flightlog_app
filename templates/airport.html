@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Airport: {{ icao }} - {{ airport.name }}</h2>
+    <a href="{{ url_for('aircraft_locations') }}" class="btn btn-outline-secondary">Back to Aircraft</a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Aircraft at this Airport</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for ac in aircraft_list %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ ac.reg }}</strong> ({{ ac.type }})
+                    </div>
+                    {% if ac.location == pilot_location %}
+                    <span class="badge bg-success">Here</span>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="list-group-item text-muted">No aircraft currently at this airport.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Available Jobs</h5>
+                <span class="badge bg-light text-dark">{{ jobs|length }} Jobs</span>
+            </div>
+            <div class="card-body">
+                {% if jobs %}
+                <div class="row">
+                    {% for job in jobs %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100 border-secondary">
+                            <div class="card-body p-3">
+                                <h6 class="card-title"><a href="{{ url_for('airport_page', icao=job.origin) }}">{{ job.origin }}</a> &rarr; <a href="{{ url_for('airport_page', icao=job.destination) }}">{{ job.destination }}</a></h6>
+                                <p class="card-text small mb-1">{{ job.dest_name }}</p>
+                                <p class="mb-2"><strong>{{ job.distance }} nm</strong> | <strong>{{ job.amount }} {{ job.unit }}</strong></p>
+                                
+                                <form action="{{ url_for('accept_job') }}" method="post">
+                                    <input type="hidden" name="job_id" value="{{ job.id }}">
+                                    <input type="hidden" name="origin" value="{{ job.origin }}">
+                                    <input type="hidden" name="destination" value="{{ job.destination }}">
+                                    <input type="hidden" name="distance" value="{{ job.distance }}">
+                                    <input type="hidden" name="type" value="{{ job.type }}">
+                                    <input type="hidden" name="amount" value="{{ job.amount }}">
+                                    <input type="hidden" name="unit" value="{{ job.unit }}">
+                                    <input type="hidden" name="dest_name" value="{{ job.dest_name }}">
+                                    
+                                    <select name="aircraft_reg" class="form-select form-select-sm mb-2" required {% if not aircraft_list or icao != pilot_location %}disabled{% endif %}>
+                                        <option value="" disabled selected>Select Aircraft...</option>
+                                        {% for ac in aircraft_list %}
+                                            {% if ac.location == pilot_location %}
+                                                {% set suitable = false %}
+                                                {% if job.type in ['PAX', 'PLEASURE'] and ac.pax >= job.amount %}
+                                                    {% set suitable = true %}
+                                                {% elif job.type == 'CARGO' and ac.cargo >= job.amount %}
+                                                    {% set suitable = true %}
+                                                {% endif %}
+                                                <option value="{{ ac.reg }}" {% if not suitable %}disabled{% endif %}>
+                                                    {{ ac.reg }} {% if not suitable %}(Too small){% endif %}
+                                                </option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                    
+                                    <button type="submit" class="btn btn-primary btn-sm w-100" {% if not aircraft_list or icao != pilot_location %}disabled{% endif %}>Accept Job</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No jobs available from this airport at the moment.</p>
+                {% endif %}
+                
+                {% if icao != pilot_location %}
+                <div class="alert alert-info small mt-3 mb-0">
+                    You must be at this airport to accept these jobs.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

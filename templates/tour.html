@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Flight Tour Management</h2>
+    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
+</div>
+
+{% if not tour_data %}
+<div class="card">
+    <div class="card-header">Create New Tour</div>
+    <div class="card-body">
+        <form method="post">
+            <div class="mb-3">
+                <label for="airports" class="form-label">Airport List (ICAO codes separated by space)</label>
+                <textarea class="form-control" id="airports" name="airports" rows="3" placeholder="e.g. KJFK KBOS KIAD KMCO" required></textarea>
+                <div class="form-text">The tour will follow these airports in order.</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Tour</button>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <span>Current Tour Route</span>
+                <a href="{{ url_for('delete_tour') }}" class="text-danger small" onclick="return confirm('Are you sure you want to delete this tour?')">Delete Tour</a>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for icao in tour_data.airports %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center {{ 'active' if loop.first else '' }}">
+                        {{ icao }}
+                        {% if loop.first %}
+                            <span class="badge bg-light text-primary">Next Origin</span>
+                        {% elif loop.index0 == 1 %}
+                            <span class="badge bg-warning text-dark">Next Destination</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">Start Next Leg</div>
+            <div class="card-body">
+                {% if pilot_location != tour_data.airports[0] %}
+                    <div class="alert alert-warning">
+                        You are currently at <strong>{{ pilot_location }}</strong>, but the next leg of the tour starts at <strong>{{ tour_data.airports[0] }}</strong>.
+                        <br><br>
+                        Please fly to {{ tour_data.airports[0] }} (e.g., using a Ferry Flight) to continue the tour.
+                    </div>
+                {% elif not aircraft_list %}
+                    <div class="alert alert-danger">
+                        No aircraft available at {{ pilot_location }} to start the tour leg.
+                    </div>
+                {% else %}
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="aircraft_reg" class="form-label">Select Aircraft for this leg</label>
+                            <select class="form-select" id="aircraft_reg" name="aircraft_reg" required>
+                                {% for ac in aircraft_list %}
+                                    <option value="{{ ac.reg }}">{{ ac.type }} ({{ ac.reg }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <p>Destination: <strong>{{ tour_data.airports[1] }}</strong></p>
+                        {% if aircraft_list and pilot_location == tour_data.airports[0] %}
+                            <!-- Distance could be shown here if we calculate it in the view, 
+                                 but it's calculated on prepare. Let's just keep it simple for now. -->
+                        {% endif %}
+                        <button type="submit" class="btn btn-success w-100">Prepare Tour Leg</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
