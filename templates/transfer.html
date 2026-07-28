@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">Transfer Pilot Location</h4>
+            </div>
+            <div class="card-body">
+                {% if not airport_selected %}
+                    <!-- Pilot Selection Form -->
+                    <h5>Step 1: Pilot Information</h5>
+                    <div class="alert alert-info">
+                        <strong>Pilot:</strong> {{ pilot_name }}<br>
+                        <strong>Current Location:</strong> {{ pilot_data.current_location }}<br>
+                        <strong>Home Location:</strong> {{ pilot_data.home_location }}
+                    </div>
+
+                    <h5 class="mt-4">Step 2: Select Destination Airport</h5>
+                    <form method="POST" class="needs-validation">
+                        <div class="mb-3">
+                            <label for="destination" class="form-label">Enter Airport ICAO Code:</label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="destination" 
+                                   name="destination" 
+                                   placeholder="e.g., KJFK, EGLL, LFPG" 
+                                   maxlength="4" 
+                                   required 
+                                   autofocus>
+                            <small class="form-text text-muted">Enter a valid 4-letter ICAO airport code</small>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('pilot_selection') }}" class="btn btn-secondary">Back</a>
+                            <button type="submit" class="btn btn-primary">Search Airport</button>
+                        </div>
+                    </form>
+                {% else %}
+                    <!-- Airport Confirmation Form -->
+                    <h5>Confirm Transfer</h5>
+                    <div class="alert alert-warning">
+                        <strong>Transfer Details:</strong><br>
+                        Pilot: {{ pilot_name }}<br>
+                        From: {{ pilot_data.current_location }}<br>
+                        To: {{ destination_airport.ICAO }} - {{ destination_airport.Name }}<br>
+                        <small>Latitude: {{ destination_airport.Latitude }}, Longitude: {{ destination_airport.Longitude }}</small>
+                    </div>
+
+                    <form method="POST" class="needs-validation">
+                        <input type="hidden" name="destination" value="{{ destination_airport.ICAO }}">
+                        <input type="hidden" name="confirm" value="true">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('transfer_pilot', pilot_name=pilot_name) }}" class="btn btn-secondary">Change Airport</a>
+                            <button type="submit" class="btn btn-success">Confirm Transfer</button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

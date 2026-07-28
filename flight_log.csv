@@ -14,3 +14,17 @@ Timestamp,Pilot,Aircraft,Type,Origin,Destination,Distance,Payload,Unit,Status
 11-07-2026,Keira UK,G-BWAD,Cessna 206 Stationair,EGTB,EGFF,87,164,kg cargo,COMPLETED
 12-07-2026,Keira UK,G-BWAA,Beechcraft Duchess 76,EGCC,EGCC,0,1,passengers,CANCELLED
 12-07-2026,Keira UK,G-BWAD,Cessna 206 Stationair,EGFF,EGNS,168,2,passengers,COMPLETED
+14-07-2026,Keira US,C-JSIC,Piper PA44 Seminole,KCMA,KCMA,0,2,passengers,COMPLETED
+15-07-2026,Keira US,N320AU,Piper PA44 Seminole,KCMA,KBNG,113,1,passengers,COMPLETED
+16-07-2026,Keira US,N320AU,Piper PA44 Seminole,KBNG,KFFZ,257,0,passengers,COMPLETED
+17-07-2026,Keira US,N320AU,Piper PA44 Seminole,KFFZ,KDNA,271,0,passengers,COMPLETED
+17-07-2026,Keira US,N320AU,Piper PA-44 Seminole,KDNA,KLBB,269,0,passengers,COMPLETED
+18-07-2026,Keira US,N320AU,Piper PA-44 Seminole,KLBB,KDDC,262,0,passengers,COMPLETED
+18-07-2026,Keira UK,G-WDEE,Piper PA-31 Navajo,EGNS,EGCK,60,254,kg cargo,COMPLETED
+19-07-2026,Keira US,N320AU,Piper PA-44 Seminole,KDDC,KFET,273,0,passengers,COMPLETED
+20-07-2026,Keira US,N320AU,Piper PA-44 Seminole,KFET,KCID,217,0,passengers,COMPLETED
+21-07-2026,Keira US,N320AU,Piper PA-44 Seminole,KCID,KOSH,187,0,passengers,COMPLETED
+22-07-2026,Keira UK,G-BWAA,Beechcraft Duchess 76,EGNX,EGNH,83,0,payload,COMPLETED
+24-07-2026,Keira UK,G-BWAA,Beechcraft Duchess 76,EGNH,EGKK,189,67,kg cargo,COMPLETED
+25-07-2026,Keira UK,G-BWAA,Beechcraft Duchess 76,EGKK,EGGP,164,0,payload,COMPLETED
+26-07-2026,Keira US,N484HP,Piper PA-34 Seneca,KCMA,KCCB,70,5,passengers,COMPLETED

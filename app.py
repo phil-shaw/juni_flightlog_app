@@ -362,5 +362,64 @@ def select_pilot(name):
         flash(f"Pilot {name} not found", "danger")
     return redirect(url_for('index'))
 
+@app.route('/transfer/<pilot_name>', methods=['GET', 'POST'])
+def transfer_pilot(pilot_name):
+    config = ConfigModel.load_config()
+    pilots = config.get('pilots', {})
+    
+    if pilot_name not in pilots:
+        flash(f"Pilot {pilot_name} not found", "danger")
+        return redirect(url_for('pilot_selection'))
+    
+    pilot_data = pilots[pilot_name]
+    state = get_state()
+    airports = state['airports']
+    
+    if request.method == 'POST':
+        destination = request.form.get('destination', '').upper().strip()
+        confirm = request.form.get('confirm') == 'true'
+        
+        if not destination:
+            flash("Please enter an airport ICAO code", "warning")
+            return render_template('transfer.html',
+                                   pilot_name=pilot_name,
+                                   pilot_data=pilot_data,
+                                   airport_selected=False)
+        
+        # Validate airport
+        if not airports.exists(destination):
+            flash(f"Airport {destination} not found! Please enter a valid ICAO code.", "danger")
+            return render_template('transfer.html',
+                                   pilot_name=pilot_name,
+                                   pilot_data=pilot_data,
+                                   airport_selected=False)
+        
+        if confirm:
+            # Apply the transfer
+            pilot_data['current_location'] = destination
+            config['pilots'][pilot_name] = pilot_data
+            ConfigModel.save_config(config)
+            flash(f"Pilot {pilot_name} transferred to {destination}", "success")
+            return redirect(url_for('pilot_selection'))
+        else:
+            # Show confirmation page
+            airport_info = airports.get_airport(destination)
+            return render_template('transfer.html',
+                                   pilot_name=pilot_name,
+                                   pilot_data=pilot_data,
+                                   airport_selected=True,
+                                   destination_airport={
+                                       'ICAO': destination,
+                                       'Name': airport_info['name'],
+                                       'Latitude': airport_info['lat'],
+                                       'Longitude': airport_info['lon']
+                                   })
+    
+    # GET request - show form
+    return render_template('transfer.html',
+                           pilot_name=pilot_name,
+                           pilot_data=pilot_data,
+                           airport_selected=False)
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

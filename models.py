@@ -198,8 +198,8 @@ class JobModel:
         all_jobs = JobModel.load_jobs()
         existing_jobs = [j for j in all_jobs if j['origin'] == icao]
         
-        if len(existing_jobs) < 2:
-            num_to_create = random.randint(2, 6) - len(existing_jobs)
+        if len(existing_jobs) < 4:
+            num_to_create = random.randint(4, 8) - len(existing_jobs)
             if num_to_create > 0:
                 # Use available aircraft at this location to determine capacity
                 available_here = []
