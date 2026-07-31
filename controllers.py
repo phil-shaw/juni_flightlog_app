@@ -1,5 +1,5 @@
 import sys
-from models import AirportModel, AircraftModel, FlightModel, ConfigModel, TourModel
+from models import AirportModel, AircraftModel, FlightModel, ConfigModel, TourModel, JobModel
 from views import TerminalView, RED, GREEN, YELLOW
 
 class FlightController:
@@ -76,7 +76,9 @@ class FlightController:
         available_aircraft = self.aircraft.get_aircraft_at(self.pilot_location)
 
         max_dist = self.config.get('max_distance')
-        jobs = FlightModel.generate_jobs(self.pilot_location, self.airports.airports, 15, max_dist, available_aircraft)
+        # Ensure persisted jobs exist for this airport and load them
+        JobModel.ensure_jobs_for_airport(self.pilot_location, self.airports.airports, self.aircraft.aircraft_list, max_dist)
+        jobs = JobModel.get_jobs_at(self.pilot_location)
         
         while True:
             origin_info = self.airports.get_airport(self.pilot_location)
@@ -84,6 +86,23 @@ class FlightController:
             job_choice = self.view.show_available_jobs(jobs, self.pilot_location, origin_name)
             if job_choice == 'b':
                 break
+
+            # Remove a job (persisted jobs only)
+            if job_choice == 'r':
+                rm = self.view.get_input("Enter job number to remove (or 'b' to cancel): ")
+                if rm == 'b':
+                    continue
+                try:
+                    ridx = int(rm) - 1
+                    if 0 <= ridx < len(jobs):
+                        job_to_remove = jobs.pop(ridx)
+                        if job_to_remove.get('id'):
+                            JobModel.remove_job(job_to_remove['id'])
+                        self.view.show_message("Job removed.", YELLOW)
+                except (ValueError, IndexError):
+                    continue
+                continue
+
             try:
                 idx = int(job_choice) - 1
                 if 0 <= idx < len(jobs):
@@ -115,6 +134,9 @@ class FlightController:
                         self.active_job['aircraft_type'] = ac['type']
                         self.selected_aircraft = ac
                         FlightModel.save_active_flight(self.active_job)
+                        # If this job came from the persisted jobs list, remove it so it won't be offered again
+                        if selected_job.get('id'):
+                            JobModel.remove_job(selected_job['id'])
                         break
             except (ValueError, IndexError):
                 continue

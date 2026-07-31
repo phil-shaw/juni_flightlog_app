@@ -119,6 +119,14 @@ def accept_job():
     flash(f"Job to {job_data['destination']} accepted with {aircraft['reg']}!", "success")
     return redirect(url_for('index'))
 
+@app.route('/remove_job', methods=['POST'])
+def remove_job():
+    job_id = request.form.get('job_id')
+    if job_id:
+        JobModel.remove_job(job_id)
+        flash("Job removed.", "info")
+    return redirect(url_for('available_jobs'))
+
 @app.route('/complete_job')
 def complete_job():
     state = get_state()

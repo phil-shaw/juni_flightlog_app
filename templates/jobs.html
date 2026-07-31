@@ -65,6 +65,10 @@
                         
                         <button type="submit" class="btn btn-primary w-100" {% if not available_aircraft %}disabled{% endif %}>Accept Job</button>
                     </form>
+                    <form action="{{ url_for('remove_job') }}" method="post" class="mt-2">
+                        <input type="hidden" name="job_id" value="{{ job.id }}">
+                        <button type="submit" class="btn btn-danger w-100 btn-sm">Remove Job</button>
+                    </form>
                 </div>
             </div>
         </div>

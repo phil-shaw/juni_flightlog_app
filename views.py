@@ -113,7 +113,7 @@ class TerminalView:
             print(TerminalView.color_text(line, color))
         
         TerminalView.move_cursor(23, 4)
-        return input(TerminalView.color_text("Select a job (1-15) or 'b' for back: ", YELLOW)).lower()
+        return input(TerminalView.color_text("Select a job (1-15), 'r' to remove a job, or 'b' for back: ", YELLOW)).lower()
 
     @staticmethod
     def select_aircraft_for_job(available_aircraft, job):
