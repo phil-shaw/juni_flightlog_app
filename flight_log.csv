@@ -28,3 +28,4 @@ Timestamp,Pilot,Aircraft,Type,Origin,Destination,Distance,Payload,Unit,Status
 24-07-2026,Keira UK,G-BWAA,Beechcraft Duchess 76,EGNH,EGKK,189,67,kg cargo,COMPLETED
 25-07-2026,Keira UK,G-BWAA,Beechcraft Duchess 76,EGKK,EGGP,164,0,payload,COMPLETED
 26-07-2026,Keira US,N484HP,Piper PA-34 Seneca,KCMA,KCCB,70,5,passengers,COMPLETED
+31-07-2026,Keira UK,G-WDEE,Piper PA-31 Navajo,EGCK,EGBB,102,313,kg cargo,COMPLETED

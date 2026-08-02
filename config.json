@@ -1,29 +1,15 @@
 {
-    "active_pilot": "Keira US",
+    "active_pilot": "Keira UK",
     "pilots": {
         "Keira US": {
-            "home_location": "KCMA",
-            "current_location": "KCCB",
-            "max_distance": 400,
-            "pilot_name": "Keira US"
+            "home_location": "KJFK",
+            "current_location": "KCMA",
+            "max_distance": 400
         },
         "Keira UK": {
             "home_location": "EGNH",
-            "current_location": "EGGP",
-            "max_distance": 400,
-            "pilot_name": "Keira UK"
-        },
-        "Keira AUS": {
-            "home_location": "YSBK",
-            "current_location": "YMEN",
-            "max_distance": 400,
-            "pilot_name": "Keira Aus"
-        },
-        "Bush Pilot Keira": {
-            "home_location": "CYBL",
-            "current_location": "CYBL",
-            "max_distance": 200,
-            "pilot_name": "Bush Pilot Keira"
+            "current_location": "EGNH",
+            "max_distance": 400
         }
     }
 }

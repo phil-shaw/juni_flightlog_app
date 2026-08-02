@@ -32,101 +32,36 @@ class ConfigModel:
                 }
             }
         }
-
-        # If a config file exists try to load and normalize it to support both
-        # the newer nested 'pilots' format and an older flat legacy format
-        # (pilot_name, home_location, current_location, max_distance).
         if os.path.exists(CONFIG_FILE):
             try:
                 with open(CONFIG_FILE, 'r') as f:
-                    raw = json.load(f)
-
-                    # Legacy flat config (pilot_name at top level)
-                    if 'pilot_name' in raw and 'pilots' not in raw:
-                        name = raw['pilot_name']
-                        nested = {
+                    config = json.load(f)
+                    # Support legacy format
+                    if 'pilot_name' in config:
+                        name = config['pilot_name']
+                        return {
                             "active_pilot": name,
                             "pilots": {
                                 name: {
-                                    "home_location": raw.get('home_location', 'EGNH'),
-                                    "current_location": raw.get('current_location', raw.get('home_location', 'EGNH')),
-                                    "max_distance": raw.get('max_distance', 400)
+                                    "home_location": config.get('home_location', 'EGNH'),
+                                    "current_location": config.get('current_location', config.get('home_location', 'EGNH')),
+                                    "max_distance": config.get('max_distance', 400)
                                 }
                             }
                         }
-                        merged = {**default_config, **nested}
-
-                        # Expose legacy flat keys for compatibility with older code
-                        pilot_data = merged['pilots'][name]
-                        merged['pilot_name'] = name
-                        merged['home_location'] = pilot_data.get('home_location')
-                        merged['current_location'] = pilot_data.get('current_location')
-                        merged['max_distance'] = pilot_data.get('max_distance')
-                        return merged
-
-                    # Newer/nested config: merge with defaults
-                    merged = {**default_config, **raw}
-
-                    # Ensure an active pilot exists
-                    active = merged.get('active_pilot') or merged.get('pilot_name')
-                    if not active or active not in merged.get('pilots', {}):
-                        if merged.get('pilots'):
-                            active = list(merged['pilots'].keys())[0]
-                            merged['active_pilot'] = active
-                        else:
-                            # No pilots defined; return defaults with legacy flats
-                            active = merged.get('active_pilot')
-
-                    # Expose legacy flat keys for compatibility
-                    if active and merged.get('pilots'):
-                        pdata = merged['pilots'].get(active, {})
-                        merged['pilot_name'] = active
-                        merged['home_location'] = pdata.get('home_location')
-                        merged['current_location'] = pdata.get('current_location')
-                        merged['max_distance'] = pdata.get('max_distance')
-
-                    return merged
+                    return {**default_config, **config}
             except (json.JSONDecodeError, IOError):
-                # Fall through to return defaults on any error
-                pass
-
-        # No config file: return defaults with legacy flat keys
-        merged = default_config.copy()
-        active = merged.get('active_pilot')
-        pdata = merged['pilots'][active]
-        merged['pilot_name'] = active
-        merged['home_location'] = pdata.get('home_location')
-        merged['current_location'] = pdata.get('current_location')
-        merged['max_distance'] = pdata.get('max_distance')
-        return merged
+                return default_config
+        return default_config
 
     @staticmethod
     def save_config(config):
-        # If user provided legacy flat format (pilot_name at top level) convert
-        # it to the nested 'pilots' format before saving to keep file format modern.
-        to_save = None
-        if 'pilot_name' in config and 'pilots' not in config:
-            name = config['pilot_name']
-            to_save = {
-                "active_pilot": name,
-                "pilots": {
-                    name: {
-                        "home_location": config.get('home_location', 'EGNH'),
-                        "current_location": config.get('current_location', config.get('home_location', 'EGNH')),
-                        "max_distance": config.get('max_distance', 400)
-                    }
-                }
-            }
-        else:
-            # Save as-provided (prefer nested format if present)
-            to_save = config
-
         with open(CONFIG_FILE, 'w') as f:
-            json.dump(to_save, f, indent=4)
+            json.dump(config, f, indent=4)
 
     @staticmethod
     def get_active_pilot_data(config):
-        active_pilot = config.get('active_pilot') or config.get('pilot_name')
+        active_pilot = config.get('active_pilot')
         if not active_pilot or active_pilot not in config.get('pilots', {}):
             # Fallback to first available pilot
             if config.get('pilots'):
