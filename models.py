@@ -4,6 +4,8 @@ import json
 import os
 import time
 import random
+import shutil
+import tempfile
 
 # Constants
 FLIGHT_LOG = "flight_log.csv"
@@ -135,15 +137,39 @@ class AircraftModel:
             with open(self.filename, mode='r', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    original_data[row['Reg']] = row
+                    original_data[row.get('Reg', '')] = row
+            # create a timestamped backup before overwriting
+            try:
+                backup_path = f"{self.filename}.bak.{int(time.time())}"
+                shutil.copy2(self.filename, backup_path)
+            except Exception:
+                # best-effort backup; don't fail the save because of backup error
+                pass
 
-        with open(self.filename, mode='w', encoding='utf-8', newline='') as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-            for ac in self.aircraft_list:
-                row = original_data.get(ac['reg'], {}).copy()
-                row['icao'] = ac['location']
-                writer.writerow(row)
+        # Write to a temp file in same directory and atomically replace the original
+        dirpath = os.path.dirname(self.filename) or '.'
+        fd, tmp_path = tempfile.mkstemp(prefix='.tmp_aircraft_', dir=dirpath, text=True)
+        try:
+            with os.fdopen(fd, 'w', encoding='utf-8', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                for ac in self.aircraft_list:
+                    row = original_data.get(ac['reg'], {}).copy()
+                    row['icao'] = ac['location']
+                    # ensure only expected fields are written
+                    out = {fn: row.get(fn, '') for fn in fieldnames}
+                    writer.writerow(out)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_path, self.filename)
+        except Exception:
+            # cleanup temp file on error
+            try:
+                if os.path.exists(tmp_path):
+                    os.remove(tmp_path)
+            except Exception:
+                pass
+            raise
 
     def get_aircraft_at(self, location):
         return [ac for ac in self.aircraft_list if ac['location'] == location]
