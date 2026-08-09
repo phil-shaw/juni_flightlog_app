@@ -360,6 +360,37 @@ class FlightModel:
                 'unit': unit,
                 'dest_name': dest['name']
             })
+
+        # If generating jobs for the active pilot's current location and their
+        # current location differs from their configured home, add an empty
+        # FERRY job back to their home airport in addition to the regular jobs.
+        try:
+            config = ConfigModel.load_config()
+            pilot_data = ConfigModel.get_active_pilot_data(config)
+        except Exception:
+            pilot_data = None
+
+        if pilot_data:
+            pilot_current = pilot_data.get('current_location') or origin_icao
+            pilot_home = pilot_data.get('home_location')
+            # Only add the ferry job when generating jobs for the pilot's current location
+            if pilot_home and pilot_current and origin_icao == pilot_current and pilot_home != pilot_current:
+                if pilot_home in airports_dict:
+                    home_airport = airports_dict[pilot_home]
+                    distance_home = FlightModel.haversine(origin['lat'], origin['lon'], home_airport['lat'], home_airport['lon'])
+                    ferry_job = {
+                        'origin': origin_icao,
+                        'destination': pilot_home,
+                        'distance': round(distance_home),
+                        'type': 'FERRY',
+                        'amount': 0,
+                        'unit': '',
+                        'dest_name': home_airport['name']
+                    }
+                    # Avoid adding duplicate ferry job
+                    if not any(j.get('destination') == pilot_home and j.get('type') == 'FERRY' for j in jobs):
+                        jobs.append(ferry_job)
+
         return jobs
 
     @staticmethod
