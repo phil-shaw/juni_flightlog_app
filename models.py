@@ -186,7 +186,10 @@ class JobModel:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             for job in jobs:
-                writer.writerow(job)
+                # Ensure only expected fields are written to avoid errors when job dicts
+                # contain extra keys (e.g., 'pilot_owner') from other code paths.
+                row = {fn: job.get(fn, '') for fn in fieldnames}
+                writer.writerow(row)
 
     @staticmethod
     def get_jobs_at(icao):
