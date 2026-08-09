@@ -50,6 +50,8 @@
                                             {% set suitable = true %}
                                         {% elif job.type == 'CARGO' and ac.cargo >= job.amount %}
                                             {% set suitable = true %}
+                                        {% elif job.type == 'FERRY' %}
+                                            {% set suitable = true %}
                                         {% endif %}
                                         
                                         <option value="{{ ac.reg }}" {% if not suitable %}disabled{% endif %}>

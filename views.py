@@ -135,6 +135,9 @@ class TerminalView:
             elif job['type'] == 'CARGO':
                 suitable = ac['cargo'] >= job['amount']
                 capacity_str = f"{ac['cargo']} kg"
+            elif job.get('type') == 'FERRY':
+                suitable = True
+                capacity_str = f"{ac.get('pax', '')} PAX"
             
             TerminalView.move_cursor(6 + i, 4)
             line = f"{i+1:<3} {ac['type']:<25} {ac['reg']:<10} {capacity_str:<15}"
