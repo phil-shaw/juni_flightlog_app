@@ -421,18 +421,34 @@ class FlightModel:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             if not file_exists:
                 writer.writeheader()
-            writer.writerow({
+
+            # Defensive handling: aircraft may be None when callers only pass job data.
+            # Prefer values from the aircraft object when present, otherwise fall back
+            # to fields on the job dict (which may contain aircraft_reg / aircraft_type).
+            aircraft_reg = ''
+            aircraft_type = ''
+            if isinstance(aircraft, dict) and aircraft is not None:
+                aircraft_reg = aircraft.get('reg', '')
+                aircraft_type = aircraft.get('type', '')
+            else:
+                aircraft_reg = job.get('aircraft_reg') or job.get('aircraft') or ''
+                aircraft_type = job.get('aircraft_type') or ''
+
+            row = {
                 'Timestamp': time.strftime("%d-%m-%Y"),
                 'Pilot': pilot_name,
-                'Aircraft': aircraft['reg'],
-                'Type': aircraft['type'],
-                'Origin': job['origin'],
-                'Destination': job['destination'],
-                'Distance': job['distance'],
-                'Payload': job['amount'],
-                'Unit': job['unit'],
+                'Aircraft': aircraft_reg,
+                'Type': aircraft_type,
+                'Origin': job.get('origin', ''),
+                'Destination': job.get('destination', ''),
+                'Distance': job.get('distance', 0),
+                'Payload': job.get('amount', 0),
+                'Unit': job.get('unit', ''),
                 'Status': status
-            })
+            }
+
+            # Write only the expected fields to avoid csv.DictWriter errors
+            writer.writerow(row)
 
 class TourModel:
     @staticmethod
